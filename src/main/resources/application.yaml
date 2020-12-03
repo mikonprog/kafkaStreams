@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: "kafka-streams-app"
+  main:
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: "all"
+    properties:
+      key.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+      value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+      schema.registry.url: ${SCHEMA_REGISTRY_URL}
+    streams:
+      application-id: ${KAFKA_STREAMS_APP_ID}
+      replication-factor: ${KAFKA_REPLICATION_FACTOR}
+      state-dir: ${KAFKA_STREAMS_STATE_DIR}
+      properties:
+        "default.key.serde": org.apache.kafka.common.serialization.Serdes$StringSerde
+        "default.value.serde": org.apache.kafka.common.serialization.Serdes$StringSerde
+        "num.stream.threads": ${KAFKA_NUM_STREAMS_THREADS}
+        "num.standby.replicas": ${KAFKA_NUM_STANDBY_REPLICAS}
+        "commit.interval.ms": ${KAFKA_COMMIT_INTERVAL_MS}
+        "application.server": ${KAFKA_STREAMS_APPLICATION_SERVER}
+        "default.deserialization.exception.handler": org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+        "topology.optimization": "all"
+        "compression.type": ${KAFKA_STREAMS_COMPRESSION}
+        "max.request.size": ${KAFKA_PRODUCER_MAX_REQUEST_SIZE}
+
+server:
+  port: ${API_PORT:8080}
+
+kafka:
+  topics:
+    listing-events: "${PDP_LISTING_EVENTS_TOPIC}"
+    price-events: "${PDP_PRICES_EVENTS_TOPIC}"
