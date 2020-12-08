@@ -7,8 +7,8 @@ import com.kostas.kafkaStreams.model.ListingSummary
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.ws.rs.QueryParam
 
 @RestController
 @RequestMapping("/listings")
@@ -17,14 +17,16 @@ class Controller(
     private val apiClient: ApiClientFactory
 ): ListingApi {
 
-    @GetMapping("/postcode/{postcode}")
-    override fun getListingsByPostcode(@PathVariable("postcode") postcode: String): List<ListingSummary> =
-            listingService.getListingsByPostcode(postcode)
-                .getOrHandle { apiClient.forInstance(it).getByPostcode(postcode) }
-
-    @GetMapping("/property_type/{property_type}")
-    override fun getListingsByType(@PathVariable("property_type") propertyType: String): List<ListingSummary> =
-            listingService.getListingsByType(propertyType)
-                .getOrHandle { apiClient.forInstance(it).getByType(propertyType) }
+    @GetMapping
+    override fun getListings(
+            @RequestParam(required = false, value = "postcode") postcode: String?,
+            @RequestParam(required = false, value = "property_type") propertyType: String?,
+    ) : List<ListingSummary> = when {
+            !postcode.isNullOrEmpty() -> listingService.getListingsByPostcode(postcode)
+                    .getOrHandle { apiClient.forInstance(it).getByPostcode(postcode) }
+            !propertyType.isNullOrEmpty() -> listingService.getListingsByType(propertyType)
+                    .getOrHandle { apiClient.forInstance(it).getByType(propertyType) }
+            else -> emptyList()
+    }
 
 }

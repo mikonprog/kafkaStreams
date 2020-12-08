@@ -37,7 +37,7 @@ internal class ControllerTest {
         fun `should return local node`() {
             every { listingService.getListingsByPostcode("SW10") } returns localNode
 
-            val response = underTest.getListingsByPostcode("SW10")
+            val response = underTest.getListings("SW10", null)
             assertThat(response).isEqualTo(listOf(listing))
         }
 
@@ -46,7 +46,7 @@ internal class ControllerTest {
             every { listingService.getListingsByPostcode("SW10") } returns remote
             every { apiClient.getByPostcode("SW10") } returns listOf(listing)
 
-            val response = underTest.getListingsByPostcode("SW10")
+            val response = underTest.getListings("SW10", null)
             assertThat(response).isEqualTo(listOf(listing))
         }
     }
@@ -58,7 +58,7 @@ internal class ControllerTest {
         fun `should return local node`() {
             every { listingService.getListingsByType("flat") } returns localNode
 
-            val response = underTest.getListingsByType("flat")
+            val response = underTest.getListings(null, "flat")
             assertThat(response).isEqualTo(listOf(listing))
         }
 
@@ -67,7 +67,7 @@ internal class ControllerTest {
             every { listingService.getListingsByType("flat") } returns remote
             every { apiClient.getByType("flat") } returns listOf(listing)
 
-            val response = underTest.getListingsByType("flat")
+            val response = underTest.getListings(null, "flat")
             assertThat(response).isEqualTo(listOf(listing))
         }
     }

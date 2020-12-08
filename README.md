@@ -34,8 +34,8 @@ After successfully run the application the kafka initializer is loading a pre-se
 On a browser you can test the results returned to user by using the REST endpoints. Examples:
 
 ```
-http://localhost:8080/listings/postcode/SW10
-http://localhost:8080/listings/property_type/flat
+http://localhost:8080/listings?postcode=SW10
+http://localhost:8080/listings?property_type=flat
 ```
 
 
