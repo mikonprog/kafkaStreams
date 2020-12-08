@@ -104,7 +104,7 @@ export class ApplicationStack extends cdk.Stack {
             "sudo chmod +x create-topics.sh",
             "sudo ./create-topics.sh",
             "aws s3 cp s3://cms-config-code-bucket/app.jar app.jar",
-            "aws s3 cp s3://cms-config-code-bucket/setup-kafka-streams.sh setup-kafka-streams.sh",
+            "aws s3 cp s3://cms-config-code-bucket/setup-kafka-streams-app.sh setup-kafka-streams-app.sh",
             "sudo chmod +x setup-cms-service.sh",
             "sudo ./setup-cms-service.sh"
         );
