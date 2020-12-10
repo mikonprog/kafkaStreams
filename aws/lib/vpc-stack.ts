@@ -15,7 +15,7 @@ export class VPCStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        this.vpc = new ec2.Vpc(this, "CMSVPC", {
+        this.vpc = new ec2.Vpc(this, "KMKafkaVPC", {
             cidr: "10.0.0.0/16",
             natGateways: 1,
             maxAzs: 2,

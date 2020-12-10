@@ -14,17 +14,18 @@ const envProps: cdk.StackProps = {
     }
 };
 
-const s3Stack = new S3Stack(app, 'S3Stack', { ...envProps });
+const s3Stack = new S3Stack(app, 'KMS3Stack', { ...envProps });
 
-const vpcStack = new VPCStack(app, 'VPCStack', { ...envProps });
+const vpcStack = new VPCStack(app, 'KMVPCStack', { ...envProps });
 
-const kafkaStack = new KafkaStack(app, 'KafkaStack', {
+const kafkaStack = new KafkaStack(app, 'KMKafkaStack', {
     ...envProps,
     vpcStack
 });
 
-const applicationStack = new ApplicationStack(app, 'ApplicationStack', {
+const applicationStack = new ApplicationStack(app, 'KMKafkaApplicationStack', {
     ...envProps,
     vpcStack
 });
+
 applicationStack.addDependency(kafkaStack);

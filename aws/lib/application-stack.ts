@@ -32,7 +32,7 @@ export class ApplicationStack extends cdk.Stack {
 
         const kafkaStreamsSecurityGroup = new ec2.SecurityGroup(
             this,
-            "CMSServiceSecurityGroup",
+            "KafkaStreamsSecurityGroup",
             {
                 vpc,
                 securityGroupName: "kafka-streams-sg",
@@ -56,7 +56,7 @@ export class ApplicationStack extends cdk.Stack {
         schemaRegistrySecurityGroup.addIngressRule(
             kafkaStreamsSecurityGroup,
             ec2.Port.allTraffic(),
-            "allow all traffic from cms service"
+            "allow all traffic from app"
         );
 
         kafkaStreamsSecurityGroup.addIngressRule(
@@ -70,7 +70,7 @@ export class ApplicationStack extends cdk.Stack {
             "eu-west-1": "ami-0aef57767f5404a3c",
         });
 
-        const role = new iam.Role(this, "CMSServiceRole", {
+        const role = new iam.Role(this, "KafkaStreamsAppServiceRole", {
             assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
         });
         role.addManagedPolicy(
@@ -100,16 +100,16 @@ export class ApplicationStack extends cdk.Stack {
             "sudo apt-get install jq -y",
             "wget https://apache.mirrors.nublue.co.uk/kafka/2.6.0/kafka_2.13-2.6.0.tgz",
             "tar -xvf kafka_2.13-2.6.0.tgz",
-            "aws s3 cp s3://cms-config-code-bucket/create-topics.sh create-topics.sh",
+            "aws s3 cp s3://km-kafka-config-code-bucket/create-topics.sh create-topics.sh",
             "sudo chmod +x create-topics.sh",
             "sudo ./create-topics.sh",
-            "aws s3 cp s3://cms-config-code-bucket/app.jar app.jar",
-            "aws s3 cp s3://cms-config-code-bucket/setup-kafka-streams-app.sh setup-kafka-streams-app.sh",
-            "sudo chmod +x setup-cms-service.sh",
-            "sudo ./setup-cms-service.sh"
+            "aws s3 cp s3://km-kafka-config-code-bucket/app.jar app.jar",
+            "aws s3 cp s3://km-kafka-config-code-bucket/setup-kafka-streams-app.sh setup-kafka-streams-app.sh",
+            "sudo chmod +x setup-kafka-streams-app.sh",
+            "sudo ./setup-kafka-streams-app.sh"
         );
 
-        const kafkaStreams = new ec2.Instance(this, "KafkaStreams", {
+        const kafkaStreams = new ec2.Instance(this, "KMKafkaStreams", {
             vpc,
             instanceType: ec2.InstanceType.of(
                 ec2.InstanceClass.T2,

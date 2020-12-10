@@ -54,7 +54,7 @@ export class KafkaStack extends cdk.Stack {
             "allow traffic from kafka"
         );
 
-        const mskCluster = new msk.CfnCluster(this, "KafkaCluster", {
+        const mskCluster = new msk.CfnCluster(this, "KMKafkaCluster", {
             brokerNodeGroupInfo: {
                 clientSubnets: props.vpcStack.privateSubnetIds,
                 instanceType: "kafka.t3.small",
@@ -65,7 +65,7 @@ export class KafkaStack extends cdk.Stack {
                     },
                 },
             },
-            clusterName: "KafkaCluster",
+            clusterName: "KMKafkaCluster",
             kafkaVersion: "2.6.0",
             numberOfBrokerNodes: 2,
             enhancedMonitoring: "DEFAULT",
@@ -113,7 +113,7 @@ export class KafkaStack extends cdk.Stack {
             "tar -xvf kafka_2.13-2.6.0.tgz",
             "wget http://packages.confluent.io/archive/6.0/confluent-community-6.0.0.tar.gz",
             "tar -xvf confluent-community-6.0.0.tar.gz",
-            "aws s3 cp s3://cms-config-code-bucket/setup-schema-registry.sh setup-schema-registry.sh",
+            "aws s3 cp s3://km-kafka-config-code-bucket/setup-schema-registry.sh setup-schema-registry.sh",
             "sudo chmod +x setup-schema-registry.sh",
             "sudo ./setup-schema-registry.sh"
         );
@@ -139,7 +139,7 @@ export class KafkaStack extends cdk.Stack {
                 service: "Kafka",
                 action: "listClusters",
                 parameters: {
-                    ClusterNameFilter: "KafkaCluster",
+                    ClusterNameFilter: "KMKafkaCluster",
                 },
                 physicalResourceId: custom.PhysicalResourceId.of(Date.now().toString()),
             },
@@ -171,6 +171,7 @@ export class KafkaStack extends cdk.Stack {
             }
         );
 
+        getBootstrapBrokers.node.addDependency(mskCluster)
 
         const bootstrapBrokers = getBootstrapBrokers.getResponseField(
             "BootstrapBrokerString"
