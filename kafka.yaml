@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  zookeeper:
+    image: zookeeper:3.5
+    ports:
+      - "2181:2181"
+    container_name: zookeeper-pdp
+
+  kafka:
+    depends_on:
+      - zookeeper
+    image: wurstmeister/kafka:2.12-2.3.0
+    ports:
+      - "9093:9093"
+    container_name: kafka-pdp
+    environment:
+      KAFKA_CREATE_TOPICS: "com.kostas.pdp.listings.events.avro:3:1,
+                            com.kostas.pdp.prices.events.avro:3:1"
+      KAFKA_PORT: "9093"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: 'INTERNAL://:9092,EXTERNAL://:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka:9092,EXTERNAL://localhost:9093'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.4.0
+    ports:
+      - "8099:8099"
+    depends_on:
+      - kafka
+      - zookeeper
+    container_name: schema-registry-pdp
+    environment:
+      SCHEMA_REGISTRY_DEBUG: 'true'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8099'
+      SCHEMA_REGISTRY_HOST_NAME: 'schema-registry'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka:9092'
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: '1'
