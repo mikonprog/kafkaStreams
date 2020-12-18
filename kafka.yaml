@@ -15,8 +15,8 @@ services:
       - "9093:9093"
     container_name: kafka-pdp
     environment:
-      KAFKA_CREATE_TOPICS: "com.kostas.pdp.listings.events.avro:3:1,
-                            com.kostas.pdp.prices.events.avro:3:1"
+      KAFKA_CREATE_TOPICS: "com.kostas.pdp.listings.events.avro:5:2,
+                            com.kostas.pdp.prices.events.avro:5:2"
       KAFKA_PORT: "9093"
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENERS: 'INTERNAL://:9092,EXTERNAL://:9093'

@@ -12,7 +12,7 @@ kafkastore.topic=_schemas
 debug=false
 EOL
 
-cat > /etc/systemd/system/confluent-schema-registry.service << EOL
+cat > ../../etc/systemd/system/confluent-schema-registry.service << EOL
 [Unit]
 Description=RESTful schema registry for Apache Kafka
 Documentation=http://docs.confluent.io/
@@ -22,7 +22,8 @@ After=network.target confluent-kafka.target
 Type=simple
 User=ubuntu
 Environment="LOG_DIR=/var/log/confluent/schema-registry"
-ExecStart=/confluent-6.0.0/bin/schema-registry-start /confluent-6.0.0/etc/schema-registry/schema-registry.properties
+WorkingDirectory=/home/ubuntu
+ExecStart=confluent-6.0.0/bin/schema-registry-start confluent-6.0.0/etc/schema-registry/schema-registry.properties
 TimeoutStopSec=180
 Restart=no
 

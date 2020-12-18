@@ -109,11 +109,12 @@ export class KafkaStack extends cdk.Stack {
             "sudo apt-get install awscli -y",
             "sudo apt-get install openjdk-13-jre-headless -y",
             "sudo apt-get install jq -y",
+            "cd home/ubuntu",
             "wget https://apache.mirrors.nublue.co.uk/kafka/2.6.0/kafka_2.13-2.6.0.tgz",
             "tar -xvf kafka_2.13-2.6.0.tgz",
             "wget http://packages.confluent.io/archive/6.0/confluent-community-6.0.0.tar.gz",
             "tar -xvf confluent-community-6.0.0.tar.gz",
-            "aws s3 cp s3://km-kafka-config-code-bucket/setup-schema-registry.sh setup-schema-registry.sh",
+            "aws s3 cp s3://km-kafka-app-config-code-bucket/setup-schema-registry.sh setup-schema-registry.sh",
             "sudo chmod +x setup-schema-registry.sh",
             "sudo ./setup-schema-registry.sh"
         );
@@ -127,7 +128,7 @@ export class KafkaStack extends cdk.Stack {
             machineImage: ubuntu,
             securityGroup: schemaRegistrySecurityGroup,
             role,
-            vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+            vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
             userData: schemaRegistryUserData,
         });
         // Do not start the schema registry until Kafka is ready

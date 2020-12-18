@@ -4,7 +4,7 @@ CLUSTER_ARN=$(aws kafka list-clusters --region eu-west-1 | jq ".ClusterInfoList[
 BOOTSTRAP_SERVERS=$(aws kafka get-bootstrap-brokers --cluster-arn $CLUSTER_ARN --region eu-west-1 | jq ".BootstrapBrokerString" -r | awk -F ',' '{print $1","$2}')
 export KAFKA_BOOTSTRAP_SERVERS=$BOOTSTRAP_SERVERS
 
-SR_IP_ADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=KafkaStack/SchemaRegistry" --region eu-west-1 | jq ".Reservations[0] .Instances[0] .PrivateIpAddress" -r)
+SR_IP_ADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=KMKafkaStack/SchemaRegistry" --region eu-west-1 | jq ".Reservations[0] .Instances[0] .PrivateIpAddress" -r)
 export SCHEMA_REGISTRY_URL="http://$SR_IP_ADDRESS:8081"
 
 cat > application.yaml << EOL
@@ -26,11 +26,11 @@ spring:
       schema.registry.url: ${SCHEMA_REGISTRY_URL}
     streams:
       application-id: "pdp-kostas-kafka-streams"
-      replication-factor: 1
+      replication-factor: 2
       state-dir: "/tmp/kafka-streams/pdp-kafkaStreams-8080"
       properties:
-        "default.key.serde": org.apache.kafka.common.serialization.Serdes$StringSerde
-        "default.value.serde": org.apache.kafka.common.serialization.Serdes$StringSerde
+        "default.key.serde": org.apache.kafka.common.serialization.Serdes\$StringSerde
+        "default.value.serde": org.apache.kafka.common.serialization.Serdes\$StringSerde
         "num.stream.threads": 1
         "num.standby.replicas": 0
         "commit.interval.ms": 100
@@ -50,12 +50,12 @@ kafka:
 
 EOL
 
-cat > /etc/systemd/system/cms-service.service << EOL
+cat > /etc/systemd/system/kafka-streams-app.service << EOL
 [Unit]
 Description=Manage Java service
 
 [Service]
-WorkingDirectory=/
+WorkingDirectory=/home/ubuntu
 ExecStart=/usr/bin/java -jar app.jar
 User=ubuntu
 Type=simple

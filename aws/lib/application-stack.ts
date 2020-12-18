@@ -98,13 +98,14 @@ export class ApplicationStack extends cdk.Stack {
             "sudo apt-get install awscli -y",
             "sudo apt-get install openjdk-13-jre-headless -y",
             "sudo apt-get install jq -y",
+            "cd /home/ubuntu",
             "wget https://apache.mirrors.nublue.co.uk/kafka/2.6.0/kafka_2.13-2.6.0.tgz",
             "tar -xvf kafka_2.13-2.6.0.tgz",
-            "aws s3 cp s3://km-kafka-config-code-bucket/create-topics.sh create-topics.sh",
+            "aws s3 cp s3://km-kafka-app-config-code-bucket/create-topics.sh create-topics.sh",
             "sudo chmod +x create-topics.sh",
             "sudo ./create-topics.sh",
-            "aws s3 cp s3://km-kafka-config-code-bucket/app.jar app.jar",
-            "aws s3 cp s3://km-kafka-config-code-bucket/setup-kafka-streams-app.sh setup-kafka-streams-app.sh",
+            "aws s3 cp s3://km-kafka-app-config-code-bucket/app.jar app.jar",
+            "aws s3 cp s3://km-kafka-app-config-code-bucket/setup-kafka-streams-app.sh setup-kafka-streams-app.sh",
             "sudo chmod +x setup-kafka-streams-app.sh",
             "sudo ./setup-kafka-streams-app.sh"
         );
@@ -118,8 +119,8 @@ export class ApplicationStack extends cdk.Stack {
             machineImage: ubuntu,
             securityGroup: kafkaStreamsSecurityGroup,
             role,
-            vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
-            userData: kafkaStreamsUserData,
+            vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+            userData: kafkaStreamsUserData
         });
     }
 }
