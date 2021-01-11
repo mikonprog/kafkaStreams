@@ -9,8 +9,8 @@ const app = new cdk.App();
 
 const envProps: cdk.StackProps = {
     env: {
-        region: 'eu-west-1',
-        account: '603508486078'
+        region: //e.g.,'eu-west-1',
+        account: //your aws account
     }
 };
 

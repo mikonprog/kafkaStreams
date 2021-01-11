@@ -17,7 +17,7 @@ class ApiClient(
             restTemplate.safelyGET<List<ListingSummary>>("$api/listings?postcode=$postcode")
 
     fun getByType(propertyType: String): List<ListingSummary> =
-            restTemplate.safelyGET<List<ListingSummary>>("$api/listings/property_type/$propertyType")
+            restTemplate.safelyGET<List<ListingSummary>>("$api/listings?property_type=$propertyType")
 
     private inline fun <reified T> RestTemplate.safelyGET(url: String): T =
         try {

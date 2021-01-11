@@ -35,7 +35,7 @@ export class ApplicationStack extends cdk.Stack {
             "KafkaStreamsSecurityGroup",
             {
                 vpc,
-                securityGroupName: "kafka-streams-sg",
+                securityGroupName: "km-kafka-streams-sg",
                 description: "KafkaStreams security group",
                 allowAllOutbound: true,
             }
@@ -53,10 +53,28 @@ export class ApplicationStack extends cdk.Stack {
             "allow traffic from kafka"
         );
 
+        kafkaStreamsSecurityGroup.addIngressRule(
+            ec2.Peer.anyIpv4(),
+            ec2.Port.tcp(8080),
+            "allow tcp access from any ipv4 on port 8080"
+        );
+
+        kafkaStreamsSecurityGroup.addIngressRule(
+            ec2.Peer.anyIpv4(),
+            ec2.Port.tcp(22),
+            "allow ssh access from any ipv4 ip"
+        );
+
         schemaRegistrySecurityGroup.addIngressRule(
             kafkaStreamsSecurityGroup,
             ec2.Port.allTraffic(),
             "allow all traffic from app"
+        );
+
+        schemaRegistrySecurityGroup.addIngressRule(
+            ec2.Peer.anyIpv4(),
+            ec2.Port.tcp(22),
+            "allow ssh access from any ipv4 ip"
         );
 
         kafkaStreamsSecurityGroup.addIngressRule(

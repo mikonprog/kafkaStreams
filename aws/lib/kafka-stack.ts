@@ -18,7 +18,7 @@ export class KafkaStack extends cdk.Stack {
             "KafkaSecurityGroup",
             {
                 vpc,
-                securityGroupName: "kafka-sg",
+                securityGroupName: "km-kafka-sg",
                 description: "Kafka security group",
                 allowAllOutbound: true,
             }
@@ -29,7 +29,7 @@ export class KafkaStack extends cdk.Stack {
             "SchemaRegistrySecurityGroup",
             {
                 vpc,
-                securityGroupName: "schema-registry-sg",
+                securityGroupName: "km-schema-registry-sg",
                 description: "Schema Registry security group",
                 allowAllOutbound: true,
             }
@@ -109,9 +109,6 @@ export class KafkaStack extends cdk.Stack {
             "sudo apt-get install awscli -y",
             "sudo apt-get install openjdk-13-jre-headless -y",
             "sudo apt-get install jq -y",
-            "cd home/ubuntu",
-            "wget https://apache.mirrors.nublue.co.uk/kafka/2.6.0/kafka_2.13-2.6.0.tgz",
-            "tar -xvf kafka_2.13-2.6.0.tgz",
             "wget http://packages.confluent.io/archive/6.0/confluent-community-6.0.0.tar.gz",
             "tar -xvf confluent-community-6.0.0.tar.gz",
             "aws s3 cp s3://km-kafka-app-config-code-bucket/setup-schema-registry.sh setup-schema-registry.sh",
@@ -119,7 +116,7 @@ export class KafkaStack extends cdk.Stack {
             "sudo ./setup-schema-registry.sh"
         );
 
-        const schemaRegistry = new ec2.Instance(this, "SchemaRegistry", {
+        const schemaRegistry = new ec2.Instance(this, "KMSchemaRegistry", {
             vpc,
             instanceType: ec2.InstanceType.of(
                 ec2.InstanceClass.T2,
