@@ -15,7 +15,7 @@ export class KafkaStack extends cdk.Stack {
 
         const kafkaSecurityGroup = new ec2.SecurityGroup(
             this,
-            "KafkaSecurityGroup",
+            "KMKafkaSecurityGroup",
             {
                 vpc,
                 securityGroupName: "km-kafka-sg",
@@ -26,7 +26,7 @@ export class KafkaStack extends cdk.Stack {
 
         const schemaRegistrySecurityGroup = new ec2.SecurityGroup(
             this,
-            "SchemaRegistrySecurityGroup",
+            "KMSchemaRegistrySecurityGroup",
             {
                 vpc,
                 securityGroupName: "km-schema-registry-sg",
@@ -66,7 +66,7 @@ export class KafkaStack extends cdk.Stack {
                 },
             },
             clusterName: "KMKafkaCluster",
-            kafkaVersion: "2.6.0",
+            kafkaVersion: "2.7.0",
             numberOfBrokerNodes: 2,
             enhancedMonitoring: "DEFAULT",
             encryptionInfo: {
@@ -82,7 +82,7 @@ export class KafkaStack extends cdk.Stack {
             "eu-west-1": "ami-0aef57767f5404a3c",
         });
 
-        const role = new iam.Role(this, "SchemaRegistryRole", {
+        const role = new iam.Role(this, "KMSchemaRegistryRole", {
             assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
         });
         role.addManagedPolicy(
@@ -125,7 +125,7 @@ export class KafkaStack extends cdk.Stack {
             machineImage: ubuntu,
             securityGroup: schemaRegistrySecurityGroup,
             role,
-            vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+            vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
             userData: schemaRegistryUserData,
         });
         // Do not start the schema registry until Kafka is ready
@@ -133,7 +133,6 @@ export class KafkaStack extends cdk.Stack {
 
         const getClusterArn = new custom.AwsCustomResource(this, "GetClusterArn", {
             onUpdate: {
-                // will also be called for a CREATE event
                 service: "Kafka",
                 action: "listClusters",
                 parameters: {
@@ -151,7 +150,6 @@ export class KafkaStack extends cdk.Stack {
             "KGetBootstrapBrokers",
             {
                 onUpdate: {
-                    // will also be called for a CREATE event
                     service: "Kafka",
                     action: "getBootstrapBrokers",
                     parameters: {
@@ -174,19 +172,17 @@ export class KafkaStack extends cdk.Stack {
         const bootstrapBrokers = getBootstrapBrokers.getResponseField(
             "BootstrapBrokerString"
         );
-        new cdk.CfnOutput(this, "BootstrapBrokers", {
+        new cdk.CfnOutput(this, "KMBootstrapBrokers", {
             value: bootstrapBrokers,
             exportName: "BootstrapBrokers",
         });
 
-        // Use the value in another construct with
-
-        new cdk.CfnOutput(this, "KafkaSecurityGroupId", {
+        new cdk.CfnOutput(this, "KMKafkaSecurityGroupId", {
             value: kafkaSecurityGroup.securityGroupId,
             exportName: "KafkaSecurityGroupId",
         });
 
-        new cdk.CfnOutput(this, "SchemaRegistrySecurityGroupId", {
+        new cdk.CfnOutput(this, "KMSchemaRegistrySecurityGroupId", {
             value: schemaRegistrySecurityGroup.securityGroupId,
             exportName: "SchemaRegistrySecurityGroupId",
         });

@@ -42,7 +42,6 @@ class ListingByPostcodeProcessor(
             )
             .mapValues { value ->
                 val listing = mapper.readValue(value, ListingSummary::class.java)
-                logger.debug { "Listing by Postcode: $listing" }
                 listing
             }
            .selectKey { _, value -> value.postcode }
@@ -52,7 +51,9 @@ class ListingByPostcodeProcessor(
            .aggregate(
                { emptySet() },
                { _, newListingByPostcode, aggregate ->
-                   aggregate + newListingByPostcode
+                   val set = aggregate + newListingByPostcode
+                   // logger.info { "Publishing new message onto aggregate: [$set]" }
+                   set
                },
                Materialized.`as`<String, Set<ListingSummary>>(store)
                        .withKeySerde(stringSerde)

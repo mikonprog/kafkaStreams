@@ -1,9 +1,6 @@
 import * as cdk from "@aws-cdk/core";
-import * as msk from "@aws-cdk/aws-msk";
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as iam from "@aws-cdk/aws-iam";
-import * as s3 from "@aws-cdk/aws-s3";
-import * as s3deploy from "@aws-cdk/aws-s3-deployment";
 
 import { ApplicationStackProps } from "./types";
 
@@ -71,12 +68,6 @@ export class ApplicationStack extends cdk.Stack {
             "allow all traffic from app"
         );
 
-        schemaRegistrySecurityGroup.addIngressRule(
-            ec2.Peer.anyIpv4(),
-            ec2.Port.tcp(22),
-            "allow ssh access from any ipv4 ip"
-        );
-
         kafkaStreamsSecurityGroup.addIngressRule(
             schemaRegistrySecurityGroup,
             ec2.Port.allTraffic(),
@@ -117,8 +108,8 @@ export class ApplicationStack extends cdk.Stack {
             "sudo apt-get install openjdk-13-jre-headless -y",
             "sudo apt-get install jq -y",
             "cd /home/ubuntu",
-            "wget https://apache.mirrors.nublue.co.uk/kafka/2.6.0/kafka_2.13-2.6.0.tgz",
-            "tar -xvf kafka_2.13-2.6.0.tgz",
+            "wget https://apache.mirrors.nublue.co.uk/kafka/2.7.0/kafka_2.13-2.7.0.tgz",
+            "tar -xvf kafka_2.13-2.7.0.tgz",
             "aws s3 cp s3://km-kafka-app-config-code-bucket/create-topics.sh create-topics.sh",
             "sudo chmod +x create-topics.sh",
             "sudo ./create-topics.sh",

@@ -4,8 +4,11 @@ CLUSTER_ARN=$(aws kafka list-clusters --region eu-west-1 | jq ".ClusterInfoList[
 BOOTSTRAP_SERVERS=$(aws kafka get-bootstrap-brokers --cluster-arn $CLUSTER_ARN --region eu-west-1 | jq ".BootstrapBrokerString" -r | awk -F ',' '{print $1","$2}')
 export KAFKA_BOOTSTRAP_SERVERS=$BOOTSTRAP_SERVERS
 
-SR_IP_ADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=KMKafkaStack/SchemaRegistry" --region eu-west-1 | jq ".Reservations[0] .Instances[0] .PrivateIpAddress" -r)
+SR_IP_ADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=KMKafkaStack/KMSchemaRegistry" --region eu-west-1 | jq ".Reservations[0] .Instances[0] .PrivateIpAddress" -r)
 export SCHEMA_REGISTRY_URL="http://$SR_IP_ADDRESS:8081"
+
+APPLICATION_SERVER_IP=$(hostname --ip-address)
+export APPLICATION_SERVER="$APPLICATION_SERVER_IP:8080"
 
 cat > application.yaml << EOL
 spring:
@@ -34,7 +37,7 @@ spring:
         "num.stream.threads": 1
         "num.standby.replicas": 0
         "commit.interval.ms": 100
-        "application.server": "http://localhost:8080"
+        "application.server": ${APPLICATION_SERVER}
         "default.deserialization.exception.handler": org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
         "topology.optimization": "all"
         "compression.type": "lz4"
