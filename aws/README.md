@@ -1,8 +1,21 @@
-# Welcome to your CDK TypeScript project!
-
-This is a blank project for TypeScript development with CDK.
+# CDK TypeScript project to deploy kafka streams app to AWS
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
+
+## Screenshots from the app running into AWS
+
+Curl the API inside the EC2:
+
+![Screenshot](pics/curl.png)
+
+Remote call from public IP to getByPostcode topic:
+
+![Screenshot](pics/remote_getByPostcode.png)
+
+Remote call from public IP to getByType topic:
+
+![Screenshot](pics/remote_getByType.png)
+
 
 ## Useful commands
 
